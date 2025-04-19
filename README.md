@@ -6,7 +6,7 @@ A modern, sleek UI library for Roblox exploits with a focus on simplicity, aesth
 
 - Clean, modern design with smooth animations and ripple effects
 - Easy to use API for creating windows, tabs, sections, and elements
-- Includes common UI elements: buttons, toggles, sliders, labels, and dropdowns
+- Includes  UI elements: buttons, toggles, sliders, labels, and dropdowns
 - Draggable windows (from topbar only) with minimize functionality
 
 ## Usage
