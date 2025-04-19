@@ -1,4 +1,4 @@
-# Noon UI Library
+# Noon
 
 A modern, sleek UI library with a focus on simplicity and aesthetics.
 
