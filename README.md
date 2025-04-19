@@ -1,6 +1,6 @@
-# Noon UI Library
+# Noon
 
-A modern, sleek UI library for Roblox exploits with a focus on simplicity, aesthetics, and customization.
+A modern, sleek UI library with a focus on simplicity, aesthetics, and customization.
 
 ## Features
 
