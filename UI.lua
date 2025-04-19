@@ -7,6 +7,60 @@ local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local CoreGui = game:GetService("CoreGui")
 
+Noon.Themes = {
+    Default = {
+        Background = Color3.fromRGB(30, 30, 30),
+        TopBar = Color3.fromRGB(25, 25, 25),
+        Section = Color3.fromRGB(35, 35, 35),
+        Element = Color3.fromRGB(45, 45, 45),
+        ElementHover = Color3.fromRGB(55, 55, 55),
+        Text = Color3.fromRGB(255, 255, 255),
+        Accent = Color3.fromRGB(0, 120, 255)
+    },
+    TokyoNight = {
+        Background = Color3.fromRGB(26, 27, 38),
+        TopBar = Color3.fromRGB(22, 22, 30),
+        Section = Color3.fromRGB(30, 32, 45),
+        Element = Color3.fromRGB(38, 40, 55),
+        ElementHover = Color3.fromRGB(48, 50, 65),
+        Text = Color3.fromRGB(192, 202, 245),
+        Accent = Color3.fromRGB(125, 207, 255)
+    },
+    Japan = {
+        Background = Color3.fromRGB(40, 40, 40),
+        TopBar = Color3.fromRGB(35, 35, 35),
+        Section = Color3.fromRGB(45, 45, 45),
+        Element = Color3.fromRGB(50, 50, 50),
+        ElementHover = Color3.fromRGB(60, 60, 60),
+        Text = Color3.fromRGB(255, 255, 255),
+        Accent = Color3.fromRGB(255, 0, 0)
+    },
+    Sun = {
+        Background = Color3.fromRGB(255, 236, 179),
+        TopBar = Color3.fromRGB(255, 213, 128),
+        Section = Color3.fromRGB(255, 245, 213),
+        Element = Color3.fromRGB(255, 222, 153),
+        ElementHover = Color3.fromRGB(255, 200, 100),
+        Text = Color3.fromRGB(40, 40, 40),
+        Accent = Color3.fromRGB(255, 128, 0)
+    },
+    Midnight = {
+        Background = Color3.fromRGB(15, 15, 20),
+        TopBar = Color3.fromRGB(10, 10, 15),
+        Section = Color3.fromRGB(20, 20, 25),
+        Element = Color3.fromRGB(30, 30, 35),
+        ElementHover = Color3.fromRGB(40, 40, 45),
+        Text = Color3.fromRGB(220, 220, 240),
+        Accent = Color3.fromRGB(103, 89, 179)
+    }
+}
+
+Noon.CurrentTheme = Noon.Themes.Default
+
+if CoreGui:FindFirstChild("NoonUI") then
+    CoreGui:FindFirstChild("NoonUI"):Destroy()
+end
+
 local NoonGui = Instance.new("ScreenGui")
 NoonGui.Name = "NoonUI"
 NoonGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -44,7 +98,7 @@ local function Ripple(obj)
     end)
 end
 
-local function DraggableObject(obj)
+local function DraggableObject(obj, dragArea)
     local UserInputService = game:GetService("UserInputService")
     local dragging
     local dragInput
@@ -56,7 +110,7 @@ local function DraggableObject(obj)
         obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
     
-    obj.InputBegan:Connect(function(input)
+    dragArea.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
@@ -70,7 +124,7 @@ local function DraggableObject(obj)
         end
     end)
     
-    obj.InputChanged:Connect(function(input)
+    dragArea.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
@@ -83,8 +137,27 @@ local function DraggableObject(obj)
     end)
 end
 
+function Noon:SetTheme(themeName)
+    if self.Themes[themeName] then
+        self.CurrentTheme = self.Themes[themeName]
+        
+        if self.Windows then
+            for _, window in pairs(self.Windows) do
+                if window.ApplyTheme then
+                    window:ApplyTheme()
+                end
+            end
+        end
+    end
+end
+
 function Noon:CreateWindow(title, gameName)
     local window = {}
+    
+    if not Noon.Windows then
+        Noon.Windows = {}
+    end
+    table.insert(Noon.Windows, window)
     
     local MainFrame = Instance.new("Frame")
     local UICorner = Instance.new("UICorner")
@@ -102,7 +175,7 @@ function Noon:CreateWindow(title, gameName)
     
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = NoonGui
-    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    MainFrame.BackgroundColor3 = Noon.CurrentTheme.Background
     MainFrame.Position = UDim2.new(0.5, -300, 0.5, -175)
     MainFrame.Size = UDim2.new(0, 600, 0, 350)
     MainFrame.ClipsDescendants = true
@@ -112,7 +185,7 @@ function Noon:CreateWindow(title, gameName)
     
     TopBar.Name = "TopBar"
     TopBar.Parent = MainFrame
-    TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    TopBar.BackgroundColor3 = Noon.CurrentTheme.TopBar
     TopBar.Size = UDim2.new(1, 0, 0, 30)
     
     UICorner_2.CornerRadius = UDim.new(0, 8)
@@ -126,7 +199,7 @@ function Noon:CreateWindow(title, gameName)
     Title.Size = UDim2.new(0, 200, 1, 0)
     Title.Font = Enum.Font.GothamBold
     Title.Text = title or "Noon UI"
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextColor3 = Noon.CurrentTheme.Text
     Title.TextSize = 14.000
     Title.TextXAlignment = Enum.TextXAlignment.Left
     
@@ -138,7 +211,7 @@ function Noon:CreateWindow(title, gameName)
     CloseButton.Size = UDim2.new(0, 30, 1, 0)
     CloseButton.Font = Enum.Font.GothamBold
     CloseButton.Text = "X"
-    CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextColor3 = Noon.CurrentTheme.Text
     CloseButton.TextSize = 14.000
     
     MinimizeButton.Name = "MinimizeButton"
@@ -149,12 +222,12 @@ function Noon:CreateWindow(title, gameName)
     MinimizeButton.Size = UDim2.new(0, 30, 1, 0)
     MinimizeButton.Font = Enum.Font.GothamBold
     MinimizeButton.Text = "-"
-    MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    MinimizeButton.TextColor3 = Noon.CurrentTheme.Text
     MinimizeButton.TextSize = 14.000
     
     TabHolder.Name = "TabHolder"
     TabHolder.Parent = MainFrame
-    TabHolder.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    TabHolder.BackgroundColor3 = Noon.CurrentTheme.TopBar
     TabHolder.Position = UDim2.new(0, 10, 0, 40)
     TabHolder.Size = UDim2.new(0, 120, 0, 300)
     
@@ -187,8 +260,8 @@ function Noon:CreateWindow(title, gameName)
     ContentContainer.BackgroundTransparency = 1.000
     ContentContainer.Position = UDim2.new(0, 140, 0, 40)
     ContentContainer.Size = UDim2.new(0, 450, 0, 300)
-    
-    DraggableObject(MainFrame)
+
+    DraggableObject(MainFrame, TopBar)
     
     CloseButton.MouseButton1Click:Connect(function()
         NoonGui:Destroy()
@@ -208,6 +281,53 @@ function Noon:CreateWindow(title, gameName)
         end
     end)
     
+    function window:ApplyTheme()
+        MainFrame.BackgroundColor3 = Noon.CurrentTheme.Background
+        TopBar.BackgroundColor3 = Noon.CurrentTheme.TopBar
+        TabHolder.BackgroundColor3 = Noon.CurrentTheme.TopBar
+        Title.TextColor3 = Noon.CurrentTheme.Text
+        CloseButton.TextColor3 = Noon.CurrentTheme.Text
+        MinimizeButton.TextColor3 = Noon.CurrentTheme.Text
+        
+        for _, v in pairs(TabScroll:GetChildren()) do
+            if v:IsA("TextButton") then
+                v.TextColor3 = Noon.CurrentTheme.Text
+                if v.BackgroundColor3 ~= Color3.fromRGB(60, 60, 60) then
+                    v.BackgroundColor3 = Noon.CurrentTheme.Element
+                else
+                    v.BackgroundColor3 = Noon.CurrentTheme.ElementHover
+                end
+            end
+        end
+        
+        for _, v in pairs(ContentContainer:GetChildren()) do
+            if v:IsA("ScrollingFrame") then
+                for _, section in pairs(v:GetChildren()) do
+                    if section:IsA("Frame") then
+                        section.BackgroundColor3 = Noon.CurrentTheme.Section
+                        
+                        for _, element in pairs(section:GetDescendants()) do
+                            if element:IsA("TextLabel") or element:IsA("TextButton") then
+                                element.TextColor3 = Noon.CurrentTheme.Text
+                                if element:IsA("TextButton") and element.BackgroundTransparency < 1 then
+                                    element.BackgroundColor3 = Noon.CurrentTheme.Element
+                                end
+                            end
+                            
+                            if element.Name == "SliderInner" then
+                                element.BackgroundColor3 = Noon.CurrentTheme.Accent
+                            end
+                            
+                            if element.Name == "ToggleFrame" and element.BackgroundColor3 ~= Color3.fromRGB(30, 30, 30) then
+                                element.BackgroundColor3 = Noon.CurrentTheme.Accent
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
     local Tabs = {}
     local FirstTab = true
     
@@ -221,11 +341,11 @@ function Noon:CreateWindow(title, gameName)
         
         TabButton.Name = name.."Tab"
         TabButton.Parent = TabScroll
-        TabButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        TabButton.BackgroundColor3 = FirstTab and Noon.CurrentTheme.ElementHover or Noon.CurrentTheme.Element
         TabButton.Size = UDim2.new(1, 0, 0, 30)
         TabButton.Font = Enum.Font.GothamSemibold
         TabButton.Text = name
-        TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TabButton.TextColor3 = Noon.CurrentTheme.Text
         TabButton.TextSize = 12.000
         TabButton.AutoButtonColor = false
         
@@ -254,15 +374,10 @@ function Noon:CreateWindow(title, gameName)
         UIPadding_2.PaddingLeft = UDim.new(0, 5)
         UIPadding_2.PaddingRight = UDim.new(0, 5)
         
-        if FirstTab then
-            TabButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            FirstTab = false
-        end
-        
         TabButton.MouseButton1Click:Connect(function()
             for _, v in pairs(TabScroll:GetChildren()) do
                 if v:IsA("TextButton") then
-                    TweenService:Create(v, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
+                    TweenService:Create(v, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.Element}):Play()
                 end
             end
             
@@ -272,7 +387,7 @@ function Noon:CreateWindow(title, gameName)
                 end
             end
             
-            TweenService:Create(TabButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
+            TweenService:Create(TabButton, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.ElementHover}):Play()
             TabContent.Visible = true
             Ripple(TabButton)
         end)
@@ -280,6 +395,10 @@ function Noon:CreateWindow(title, gameName)
         UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             TabContent.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 10)
         end)
+        
+        if FirstTab then
+            FirstTab = false
+        end
         
         function tab:Section(name)
             local section = {}
@@ -293,7 +412,7 @@ function Noon:CreateWindow(title, gameName)
             
             SectionFrame.Name = name.."Section"
             SectionFrame.Parent = TabContent
-            SectionFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            SectionFrame.BackgroundColor3 = Noon.CurrentTheme.Section
             SectionFrame.Size = UDim2.new(1, 0, 0, 36)
             SectionFrame.ClipsDescendants = true
             
@@ -308,7 +427,7 @@ function Noon:CreateWindow(title, gameName)
             SectionTitle.Size = UDim2.new(1, -20, 0, 36)
             SectionTitle.Font = Enum.Font.GothamSemibold
             SectionTitle.Text = name
-            SectionTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+            SectionTitle.TextColor3 = Noon.CurrentTheme.Text
             SectionTitle.TextSize = 14.000
             SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
             
@@ -340,11 +459,11 @@ function Noon:CreateWindow(title, gameName)
                 
                 Button.Name = text.."Button"
                 Button.Parent = SectionContent
-                Button.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                Button.BackgroundColor3 = Noon.CurrentTheme.Element
                 Button.Size = UDim2.new(1, 0, 0, 30)
                 Button.Font = Enum.Font.GothamSemibold
                 Button.Text = text
-                Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Button.TextColor3 = Noon.CurrentTheme.Text
                 Button.TextSize = 12.000
                 Button.AutoButtonColor = false
                 
@@ -357,11 +476,11 @@ function Noon:CreateWindow(title, gameName)
                 end)
                 
                 Button.MouseEnter:Connect(function()
-                    TweenService:Create(Button, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
+                    TweenService:Create(Button, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.ElementHover}):Play()
                 end)
                 
                 Button.MouseLeave:Connect(function()
-                    TweenService:Create(Button, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+                    TweenService:Create(Button, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.Element}):Play()
                 end)
                 
                 return Button
@@ -379,11 +498,11 @@ function Noon:CreateWindow(title, gameName)
                 
                 Toggle.Name = text.."Toggle"
                 Toggle.Parent = SectionContent
-                Toggle.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                Toggle.BackgroundColor3 = Noon.CurrentTheme.Element
                 Toggle.Size = UDim2.new(1, 0, 0, 30)
                 Toggle.Font = Enum.Font.GothamSemibold
                 Toggle.Text = ""
-                Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Toggle.TextColor3 = Noon.CurrentTheme.Text
                 Toggle.TextSize = 12.000
                 Toggle.AutoButtonColor = false
                 
@@ -398,7 +517,7 @@ function Noon:CreateWindow(title, gameName)
                 Title_2.Size = UDim2.new(1, -60, 1, 0)
                 Title_2.Font = Enum.Font.GothamSemibold
                 Title_2.Text = text
-                Title_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Title_2.TextColor3 = Noon.CurrentTheme.Text
                 Title_2.TextSize = 12.000
                 Title_2.TextXAlignment = Enum.TextXAlignment.Left
                 
@@ -422,7 +541,7 @@ function Noon:CreateWindow(title, gameName)
                 
                 local function UpdateToggle()
                     if toggled then
-                        TweenService:Create(ToggleFrame, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(0, 120, 255)}):Play()
+                        TweenService:Create(ToggleFrame, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.Accent}):Play()
                         TweenService:Create(ToggleButton, TweenInfo.new(0.3), {Position = UDim2.new(1, -14, 0.5, -6)}):Play()
                     else
                         TweenService:Create(ToggleFrame, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
@@ -439,11 +558,11 @@ function Noon:CreateWindow(title, gameName)
                 end)
                 
                 Toggle.MouseEnter:Connect(function()
-                    TweenService:Create(Toggle, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
+                    TweenService:Create(Toggle, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.ElementHover}):Play()
                 end)
                 
                 Toggle.MouseLeave:Connect(function()
-                    TweenService:Create(Toggle, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+                    TweenService:Create(Toggle, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.Element}):Play()
                 end)
                 
                 UpdateToggle()
@@ -465,7 +584,7 @@ function Noon:CreateWindow(title, gameName)
                 
                 Slider.Name = text.."Slider"
                 Slider.Parent = SectionContent
-                Slider.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                Slider.BackgroundColor3 = Noon.CurrentTheme.Element
                 Slider.Size = UDim2.new(1, 0, 0, 45)
                 
                 UICorner_9.CornerRadius = UDim.new(0, 6)
@@ -479,7 +598,7 @@ function Noon:CreateWindow(title, gameName)
                 Title_3.Size = UDim2.new(1, -20, 0, 30)
                 Title_3.Font = Enum.Font.GothamSemibold
                 Title_3.Text = text
-                Title_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Title_3.TextColor3 = Noon.CurrentTheme.Text
                 Title_3.TextSize = 12.000
                 Title_3.TextXAlignment = Enum.TextXAlignment.Left
                 
@@ -507,7 +626,7 @@ function Noon:CreateWindow(title, gameName)
                 
                 SliderInner.Name = "SliderInner"
                 SliderInner.Parent = SliderFrame
-                SliderInner.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+                SliderInner.BackgroundColor3 = Noon.CurrentTheme.Accent
                 SliderInner.Size = UDim2.new(0.5, 0, 1, 0)
                 
                 UICorner_12.CornerRadius = UDim.new(1, 0)
@@ -521,7 +640,7 @@ function Noon:CreateWindow(title, gameName)
                 Value.Size = UDim2.new(0, 40, 0, 30)
                 Value.Font = Enum.Font.GothamSemibold
                 Value.Text = tostring(default or min)
-                Value.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Value.TextColor3 = Noon.CurrentTheme.Text
                 Value.TextSize = 12.000
                 
                 local value = default or min
@@ -570,7 +689,7 @@ function Noon:CreateWindow(title, gameName)
                 Label.Size = UDim2.new(1, 0, 0, 20)
                 Label.Font = Enum.Font.GothamSemibold
                 Label.Text = text
-                Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Label.TextColor3 = Noon.CurrentTheme.Text
                 Label.TextSize = 12.000
                 
                 function Label:Update(newText)
@@ -578,6 +697,202 @@ function Noon:CreateWindow(title, gameName)
                 end
                 
                 return Label
+            end
+            
+            function section:Dropdown(text, options, callback)
+                local Dropdown = Instance.new("Frame")
+                local UICorner = Instance.new("UICorner")
+                local Title = Instance.new("TextLabel")
+                local DropButton = Instance.new("TextButton")
+                local UICorner_2 = Instance.new("UICorner")
+                local Arrow = Instance.new("ImageLabel")
+                local DropdownFrame = Instance.new("Frame")
+                local UICorner_3 = Instance.new("UICorner")
+                local DropdownContainer = Instance.new("ScrollingFrame")
+                local UIListLayout = Instance.new("UIListLayout")
+                local UIPadding = Instance.new("UIPadding")
+                
+                Dropdown.Name = text.."Dropdown"
+                Dropdown.Parent = SectionContent
+                Dropdown.BackgroundColor3 = Noon.CurrentTheme.Element
+                Dropdown.Size = UDim2.new(1, 0, 0, 30)
+                
+                UICorner.CornerRadius = UDim.new(0, 6)
+                UICorner.Parent = Dropdown
+                
+                Title.Name = "Title"
+                Title.Parent = Dropdown
+                Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                Title.BackgroundTransparency = 1.000
+                Title.Position = UDim2.new(0, 10, 0, 0)
+                Title.Size = UDim2.new(1, -40, 1, 0)
+                Title.Font = Enum.Font.GothamSemibold
+                Title.Text = text
+                Title.TextColor3 = Noon.CurrentTheme.Text
+                Title.TextSize = 12.000
+                Title.TextXAlignment = Enum.TextXAlignment.Left
+                
+                DropButton.Name = "DropButton"
+                DropButton.Parent = Dropdown
+                DropButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                DropButton.BackgroundTransparency = 1.000
+                DropButton.Size = UDim2.new(1, 0, 1, 0)
+                DropButton.Font = Enum.Font.SourceSans
+                DropButton.Text = ""
+                DropButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+                DropButton.TextSize = 14.000
+                
+                UICorner_2.CornerRadius = UDim.new(0, 6)
+                UICorner_2.Parent = DropButton
+                
+                Arrow.Name = "Arrow"
+                Arrow.Parent = Dropdown
+                Arrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                Arrow.BackgroundTransparency = 1.000
+                Arrow.Position = UDim2.new(1, -25, 0.5, -8)
+                Arrow.Size = UDim2.new(0, 16, 0, 16)
+                Arrow.Image = "rbxassetid://6031091004"
+                Arrow.ImageColor3 = Noon.CurrentTheme.Text
+                
+                DropdownFrame.Name = "DropdownFrame"
+                DropdownFrame.Parent = Dropdown
+                DropdownFrame.BackgroundColor3 = Noon.CurrentTheme.Element
+                DropdownFrame.Position = UDim2.new(0, 0, 1, 5)
+                DropdownFrame.Size = UDim2.new(1, 0, 0, 0)
+                DropdownFrame.ClipsDescendants = true
+                DropdownFrame.Visible = false
+                DropdownFrame.ZIndex = 5
+                
+                UICorner_3.CornerRadius = UDim.new(0, 6)
+                UICorner_3.Parent = DropdownFrame
+                
+                DropdownContainer.Name = "DropdownContainer"
+                DropdownContainer.Parent = DropdownFrame
+                DropdownContainer.Active = true
+                DropdownContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                DropdownContainer.BackgroundTransparency = 1.000
+                DropdownContainer.BorderSizePixel = 0
+                DropdownContainer.Size = UDim2.new(1, 0, 1, 0)
+                DropdownContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
+                DropdownContainer.ScrollBarThickness = 2
+                DropdownContainer.ScrollBarImageColor3 = Noon.CurrentTheme.Accent
+                DropdownContainer.ZIndex = 5
+                
+                UIListLayout.Parent = DropdownContainer
+                UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+                UIListLayout.Padding = UDim.new(0, 5)
+                
+                UIPadding.Parent = DropdownContainer
+                UIPadding.PaddingBottom = UDim.new(0, 5)
+                UIPadding.PaddingLeft = UDim.new(0, 5)
+                UIPadding.PaddingRight = UDim.new(0, 5)
+                UIPadding.PaddingTop = UDim.new(0, 5)
+                
+                local selected = options[1]
+                local dropped = false
+                
+                local function UpdateDropdown()
+                    if dropped then
+                        DropdownFrame.Visible = true
+                        TweenService:Create(Arrow, TweenInfo.new(0.3), {Rotation = 180}):Play()
+                        TweenService:Create(DropdownFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, math.min(#options * 25, 100))}):Play()
+                    else
+                        TweenService:Create(Arrow, TweenInfo.new(0.3), {Rotation = 0}):Play()
+                        TweenService:Create(DropdownFrame, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 0)}):Play()
+                        spawn(function()
+                            wait(0.3)
+                            if not dropped then
+                                DropdownFrame.Visible = false
+                            end
+                        end)
+                    end
+                end
+                
+                DropButton.MouseButton1Click:Connect(function()
+                    dropped = not dropped
+                    UpdateDropdown()
+                    Ripple(Dropdown)
+                end)
+                
+                Dropdown.MouseEnter:Connect(function()
+                    TweenService:Create(Dropdown, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.ElementHover}):Play()
+                end)
+                
+                Dropdown.MouseLeave:Connect(function()
+                    TweenService:Create(Dropdown, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.Element}):Play()
+                end)
+                
+                UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+                    DropdownContainer.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+                end)
+                
+                local function AddOptions(optionsList)
+                    for _, option in pairs(optionsList) do
+                        local OptionButton = Instance.new("TextButton")
+                        local UICorner_4 = Instance.new("UICorner")
+                        
+                        OptionButton.Name = option.."Option"
+                        OptionButton.Parent = DropdownContainer
+                        OptionButton.BackgroundColor3 = Noon.CurrentTheme.Element
+                        OptionButton.Size = UDim2.new(1, 0, 0, 20)
+                        OptionButton.Font = Enum.Font.GothamSemibold
+                        OptionButton.Text = option
+                        OptionButton.TextColor3 = Noon.CurrentTheme.Text
+                        OptionButton.TextSize = 12.000
+                        OptionButton.ZIndex = 6
+                        OptionButton.AutoButtonColor = false
+                        
+                        UICorner_4.CornerRadius = UDim.new(0, 6)
+                        UICorner_4.Parent = OptionButton
+                        
+                        OptionButton.MouseButton1Click:Connect(function()
+                            selected = option
+                            Title.Text = text..": "..selected
+                            dropped = false
+                            UpdateDropdown()
+                            if callback then callback(selected) end
+                        end)
+                        
+                        OptionButton.MouseEnter:Connect(function()
+                            TweenService:Create(OptionButton, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.ElementHover}):Play()
+                        end)
+                        
+                        OptionButton.MouseLeave:Connect(function()
+                            TweenService:Create(OptionButton, TweenInfo.new(0.3), {BackgroundColor3 = Noon.CurrentTheme.Element}):Play()
+                        end)
+                    end
+                end
+                
+                AddOptions(options)
+                Title.Text = text..": "..selected
+                
+                local DropdownObject = {}
+                
+                function DropdownObject:Refresh(newOptions)
+                    for _, item in pairs(DropdownContainer:GetChildren()) do
+                        if item:IsA("TextButton") then
+                            item:Destroy()
+                        end
+                    end
+                    
+                    AddOptions(newOptions)
+                    
+                    if not table.find(newOptions, selected) then
+                        selected = newOptions[1]
+                        Title.Text = text..": "..selected
+                        if callback then callback(selected) end
+                    end
+                end
+                
+                function DropdownObject:Select(option)
+                    if table.find(options, option) then
+                        selected = option
+                        Title.Text = text..": "..selected
+                        if callback then callback(selected) end
+                    end
+                end
+                
+                return DropdownObject
             end
             
             return section
