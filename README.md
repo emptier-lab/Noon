@@ -1,6 +1,6 @@
 # Noon
 
-A modern, sleek UI library with a focus on simplicity, aesthetics, and customization.
+A modern, sleek UI library with a focus on simplicity, aesthetics.
 
 ## Features
 
