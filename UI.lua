@@ -57,6 +57,7 @@ Noon.Themes = {
 
 Noon.CurrentTheme = Noon.Themes.Default
 
+-- Check for existing UI and remove it
 if CoreGui:FindFirstChild("NoonUI") then
     CoreGui:FindFirstChild("NoonUI"):Destroy()
 end
@@ -98,23 +99,23 @@ local function Ripple(obj)
     end)
 end
 
-local function DraggableObject(obj, dragArea)
+local function DraggableObject(object, dragArea)
     local UserInputService = game:GetService("UserInputService")
-    local dragging
+    local dragging = false
     local dragInput
     local dragStart
     local startPos
     
     local function update(input)
         local delta = input.Position - dragStart
-        obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        object.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
     
     dragArea.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
-            startPos = obj.Position
+            startPos = object.Position
             
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
@@ -157,6 +158,7 @@ function Noon:CreateWindow(title, gameName)
     if not Noon.Windows then
         Noon.Windows = {}
     end
+    
     table.insert(Noon.Windows, window)
     
     local MainFrame = Instance.new("Frame")
@@ -164,8 +166,9 @@ function Noon:CreateWindow(title, gameName)
     local TopBar = Instance.new("Frame")
     local UICorner_2 = Instance.new("UICorner")
     local Title = Instance.new("TextLabel")
-    local CloseButton = Instance.new("TextButton")
-    local MinimizeButton = Instance.new("TextButton")
+    local GameName = Instance.new("TextLabel")
+    local Minimize = Instance.new("ImageButton")
+    local Close = Instance.new("ImageButton")
     local TabHolder = Instance.new("Frame")
     local UICorner_3 = Instance.new("UICorner")
     local TabScroll = Instance.new("ScrollingFrame")
@@ -176,11 +179,11 @@ function Noon:CreateWindow(title, gameName)
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = NoonGui
     MainFrame.BackgroundColor3 = Noon.CurrentTheme.Background
-    MainFrame.Position = UDim2.new(0.5, -300, 0.5, -175)
-    MainFrame.Size = UDim2.new(0, 600, 0, 350)
+    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
+    MainFrame.Size = UDim2.new(0, 500, 0, 300)
     MainFrame.ClipsDescendants = true
     
-    UICorner.CornerRadius = UDim.new(0, 8)
+    UICorner.CornerRadius = UDim.new(0, 6)
     UICorner.Parent = MainFrame
     
     TopBar.Name = "TopBar"
@@ -188,7 +191,7 @@ function Noon:CreateWindow(title, gameName)
     TopBar.BackgroundColor3 = Noon.CurrentTheme.TopBar
     TopBar.Size = UDim2.new(1, 0, 0, 30)
     
-    UICorner_2.CornerRadius = UDim.new(0, 8)
+    UICorner_2.CornerRadius = UDim.new(0, 6)
     UICorner_2.Parent = TopBar
     
     Title.Name = "Title"
@@ -203,35 +206,42 @@ function Noon:CreateWindow(title, gameName)
     Title.TextSize = 14.000
     Title.TextXAlignment = Enum.TextXAlignment.Left
     
-    CloseButton.Name = "CloseButton"
-    CloseButton.Parent = TopBar
-    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    CloseButton.BackgroundTransparency = 1.000
-    CloseButton.Position = UDim2.new(1, -30, 0, 0)
-    CloseButton.Size = UDim2.new(0, 30, 1, 0)
-    CloseButton.Font = Enum.Font.GothamBold
-    CloseButton.Text = "X"
-    CloseButton.TextColor3 = Noon.CurrentTheme.Text
-    CloseButton.TextSize = 14.000
+    GameName.Name = "GameName"
+    GameName.Parent = TopBar
+    GameName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    GameName.BackgroundTransparency = 1.000
+    GameName.Position = UDim2.new(0, 10, 0.5, 0)
+    GameName.Size = UDim2.new(0, 200, 0, 15)
+    GameName.Font = Enum.Font.Gotham
+    GameName.Text = gameName or ""
+    GameName.TextColor3 = Noon.CurrentTheme.Text
+    GameName.TextSize = 12.000
+    GameName.TextTransparency = 0.400
+    GameName.TextXAlignment = Enum.TextXAlignment.Left
     
-    MinimizeButton.Name = "MinimizeButton"
-    MinimizeButton.Parent = TopBar
-    MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    MinimizeButton.BackgroundTransparency = 1.000
-    MinimizeButton.Position = UDim2.new(1, -60, 0, 0)
-    MinimizeButton.Size = UDim2.new(0, 30, 1, 0)
-    MinimizeButton.Font = Enum.Font.GothamBold
-    MinimizeButton.Text = "-"
-    MinimizeButton.TextColor3 = Noon.CurrentTheme.Text
-    MinimizeButton.TextSize = 14.000
+    Minimize.Name = "Minimize"
+    Minimize.Parent = TopBar
+    Minimize.BackgroundTransparency = 1.000
+    Minimize.Position = UDim2.new(1, -60, 0, 0)
+    Minimize.Size = UDim2.new(0, 30, 0, 30)
+    Minimize.Image = "rbxassetid://7072719338"
+    Minimize.ImageColor3 = Noon.CurrentTheme.Text
+    
+    Close.Name = "Close"
+    Close.Parent = TopBar
+    Close.BackgroundTransparency = 1.000
+    Close.Position = UDim2.new(1, -30, 0, 0)
+    Close.Size = UDim2.new(0, 30, 0, 30)
+    Close.Image = "rbxassetid://7072725342"
+    Close.ImageColor3 = Noon.CurrentTheme.Text
     
     TabHolder.Name = "TabHolder"
     TabHolder.Parent = MainFrame
     TabHolder.BackgroundColor3 = Noon.CurrentTheme.TopBar
-    TabHolder.Position = UDim2.new(0, 10, 0, 40)
-    TabHolder.Size = UDim2.new(0, 120, 0, 300)
+    TabHolder.Position = UDim2.new(0, 0, 0, 30)
+    TabHolder.Size = UDim2.new(0, 120, 1, -30)
     
-    UICorner_3.CornerRadius = UDim.new(0, 8)
+    UICorner_3.CornerRadius = UDim.new(0, 6)
     UICorner_3.Parent = TabHolder
     
     TabScroll.Name = "TabScroll"
@@ -240,45 +250,56 @@ function Noon:CreateWindow(title, gameName)
     TabScroll.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     TabScroll.BackgroundTransparency = 1.000
     TabScroll.BorderSizePixel = 0
-    TabScroll.Size = UDim2.new(1, 0, 1, 0)
+    TabScroll.Position = UDim2.new(0, 0, 0, 10)
+    TabScroll.Size = UDim2.new(1, 0, 1, -10)
     TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     TabScroll.ScrollBarThickness = 2
     TabScroll.ScrollBarImageColor3 = Color3.fromRGB(40, 40, 40)
     
     UIListLayout.Parent = TabScroll
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Padding = UDim.new(0, 5)
     
     UIPadding.Parent = TabScroll
     UIPadding.PaddingTop = UDim.new(0, 5)
-    UIPadding.PaddingLeft = UDim.new(0, 5)
-    UIPadding.PaddingRight = UDim.new(0, 5)
     
     ContentContainer.Name = "ContentContainer"
     ContentContainer.Parent = MainFrame
     ContentContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     ContentContainer.BackgroundTransparency = 1.000
-    ContentContainer.Position = UDim2.new(0, 140, 0, 40)
-    ContentContainer.Size = UDim2.new(0, 450, 0, 300)
-
+    ContentContainer.Position = UDim2.new(0, 125, 0, 35)
+    ContentContainer.Size = UDim2.new(1, -130, 1, -40)
+    
+    -- Only allow dragging from the TopBar
     DraggableObject(MainFrame, TopBar)
     
-    CloseButton.MouseButton1Click:Connect(function()
+    -- Minimize button functionality
+    local minimized = false
+    local originalSize = MainFrame.Size
+    local originalPosition = MainFrame.Position
+    
+    Minimize.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        
+        if minimized then
+            TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, originalSize.X.Offset, 0, 30)}):Play()
+            TweenService:Create(ContentContainer, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -130, 0, 0)}):Play()
+            TweenService:Create(TabHolder, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 120, 0, 0)}):Play()
+        else
+            TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = originalSize}):Play()
+            TweenService:Create(ContentContainer, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -130, 1, -40)}):Play()
+            TweenService:Create(TabHolder, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(0, 120, 1, -30)}):Play()
+        end
+    end)
+    
+    -- Close button functionality
+    Close.MouseButton1Click:Connect(function()
         NoonGui:Destroy()
     end)
     
-    local minimized = false
-    MinimizeButton.MouseButton1Click:Connect(function()
-        minimized = not minimized
-        if minimized then
-            TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0, 600, 0, 30)}):Play()
-            TabHolder.Visible = false
-            ContentContainer.Visible = false
-        else
-            TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0, 600, 0, 350)}):Play()
-            TabHolder.Visible = true
-            ContentContainer.Visible = true
-        end
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        TabScroll.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
     end)
     
     function window:ApplyTheme()
@@ -286,16 +307,15 @@ function Noon:CreateWindow(title, gameName)
         TopBar.BackgroundColor3 = Noon.CurrentTheme.TopBar
         TabHolder.BackgroundColor3 = Noon.CurrentTheme.TopBar
         Title.TextColor3 = Noon.CurrentTheme.Text
-        CloseButton.TextColor3 = Noon.CurrentTheme.Text
-        MinimizeButton.TextColor3 = Noon.CurrentTheme.Text
+        GameName.TextColor3 = Noon.CurrentTheme.Text
+        Minimize.ImageColor3 = Noon.CurrentTheme.Text
+        Close.ImageColor3 = Noon.CurrentTheme.Text
         
         for _, v in pairs(TabScroll:GetChildren()) do
             if v:IsA("TextButton") then
                 v.TextColor3 = Noon.CurrentTheme.Text
-                if v.BackgroundColor3 ~= Color3.fromRGB(60, 60, 60) then
+                if v.BackgroundColor3 ~= Noon.CurrentTheme.ElementHover then
                     v.BackgroundColor3 = Noon.CurrentTheme.Element
-                else
-                    v.BackgroundColor3 = Noon.CurrentTheme.ElementHover
                 end
             end
         end
@@ -436,21 +456,20 @@ function Noon:CreateWindow(title, gameName)
             SectionContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             SectionContent.BackgroundTransparency = 1.000
             SectionContent.Position = UDim2.new(0, 0, 0, 36)
-            SectionContent.Size = UDim2.new(1, 0, 0, 0)
+            SectionContent.Size = UDim2.new(1, 0, 1, -36)
             
             UIListLayout_3.Parent = SectionContent
             UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
-            UIListLayout_3.Padding = UDim.new(0, 8)
+            UIListLayout_3.Padding = UDim.new(0, 5)
             
             UIPadding_3.Parent = SectionContent
-            UIPadding_3.PaddingBottom = UDim.new(0, 10)
             UIPadding_3.PaddingLeft = UDim.new(0, 10)
             UIPadding_3.PaddingRight = UDim.new(0, 10)
-            UIPadding_3.PaddingTop = UDim.new(0, 10)
+            UIPadding_3.PaddingTop = UDim.new(0, 5)
+            UIPadding_3.PaddingBottom = UDim.new(0, 5)
             
             UIListLayout_3:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                SectionContent.Size = UDim2.new(1, 0, 0, UIListLayout_3.AbsoluteContentSize.Y + 20)
-                SectionFrame.Size = UDim2.new(1, 0, 0, 36 + SectionContent.Size.Y.Offset)
+                SectionFrame.Size = UDim2.new(1, 0, 0, 36 + UIListLayout_3.AbsoluteContentSize.Y + 10)
             end)
             
             function section:Button(text, callback)
