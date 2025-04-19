@@ -56,8 +56,6 @@ Noon.Themes = {
 }
 
 Noon.CurrentTheme = Noon.Themes.Default
-
--- Check for existing UI and remove it
 if CoreGui:FindFirstChild("NoonUI") then
     CoreGui:FindFirstChild("NoonUI"):Destroy()
 end
@@ -270,11 +268,9 @@ function Noon:CreateWindow(title, gameName)
     ContentContainer.BackgroundTransparency = 1.000
     ContentContainer.Position = UDim2.new(0, 125, 0, 35)
     ContentContainer.Size = UDim2.new(1, -130, 1, -40)
-    
-    -- Only allow dragging from the TopBar
+
     DraggableObject(MainFrame, TopBar)
-    
-    -- Minimize button functionality
+
     local minimized = false
     local originalSize = MainFrame.Size
     local originalPosition = MainFrame.Position
@@ -293,7 +289,6 @@ function Noon:CreateWindow(title, gameName)
         end
     end)
     
-    -- Close button functionality
     Close.MouseButton1Click:Connect(function()
         NoonGui:Destroy()
     end)
