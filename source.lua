@@ -239,7 +239,7 @@ function library:CreateWindow(name, version, icon)
 		SectionLabel.BackgroundTransparency = 1.000
 		SectionLabel.Position = UDim2.new(0, 7, 0, 0)
 		SectionLabel.Size = UDim2.new(1, -7, 0, 30)
-		SectionLabel.Font = Enum.Font.GothamBlack
+		SectionLabel.Font = Enum.Font.Gotham
 		SectionLabel.Text = name --"Section 1"
 		SectionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		SectionLabel.TextSize = 12.000
@@ -577,7 +577,7 @@ function library:CreateWindow(name, version, icon)
 				Title.BackgroundTransparency = 1.000
 				Title.Position = UDim2.new(0, 7, 0, 1)
 				Title.Size = UDim2.new(1, -7, 0.5, 0)
-				Title.Font = Enum.Font.GothamBlack
+				Title.Font = Enum.Font.Gotham
 				Title.Text = name
 				Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 				Title.TextSize = 12.000
@@ -739,7 +739,7 @@ function library:CreateWindow(name, version, icon)
 				Title_4.BackgroundTransparency = 1.000
 				Title_4.Position = UDim2.new(0, 7, 0, 0)
 				Title_4.Size = UDim2.new(1, -7, 0, 30)
-				Title_4.Font = Enum.Font.GothamBlack
+				Title_4.Font = Enum.Font.Gotham
 				Title_4.Text = name
 				Title_4.TextColor3 = Color3.fromRGB(255, 255, 255)
 				Title_4.TextSize = 12.000
@@ -1000,7 +1000,7 @@ function library:CreateWindow(name, version, icon)
 				Title_3.BackgroundTransparency = 1.000
 				Title_3.Position = UDim2.new(0.0169024151, 0, 0, 0)
 				Title_3.Size = UDim2.new(0, 55, 0, 29)
-				Title_3.Font = Enum.Font.GothamBlack
+				Title_3.Font = Enum.Font.Gotham
 				Title_3.Text = name
 				Title_3.TextColor3 = Color3.fromRGB(255, 255, 255)
 				Title_3.TextSize = 12.000
@@ -1114,7 +1114,7 @@ function library:CreateWindow(name, version, icon)
 				ToggleTitle.BackgroundTransparency = 1.000
 				ToggleTitle.Position = UDim2.new(0, 7, 0, 1)
 				ToggleTitle.Size = UDim2.new(1, -7, 0.5, 0)
-				ToggleTitle.Font = Enum.Font.GothamBlack
+				ToggleTitle.Font = Enum.Font.Gotham
 				ToggleTitle.Text = title
 				ToggleTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 				ToggleTitle.TextSize = 12.000
@@ -1227,7 +1227,7 @@ function library:CreateWindow(name, version, icon)
 				Title.BackgroundTransparency = 1.000
 				Title.Position = UDim2.new(0, 7, 0, 0)
 				Title.Size = UDim2.new(1, -7, 0, 30)
-				Title.Font = Enum.Font.GothamBlack
+				Title.Font = Enum.Font.Gotham
 				Title.Text = name
 				Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 				Title.TextSize = 12.000
